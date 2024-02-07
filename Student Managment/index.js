@@ -1,3 +1,5 @@
+//////////////Student Management System///////////////
+import inquirer from "inquirer";
 import chalk from "chalk";
 class Course {
     courseName;
@@ -7,15 +9,15 @@ class Course {
 }
 class Student {
     studentId;
-    firstName;
-    lastName;
+    sName;
+    fName;
     age;
     grade;
     courses = [];
-    constructor(studentId, firstName, lastName, age, grade) {
+    constructor(studentId, sName, fName, age, grade) {
         this.studentId = studentId;
-        this.firstName = firstName;
-        this.lastName = lastName;
+        this.sName = sName;
+        this.fName = fName;
         this.age = age;
         this.grade = grade;
     }
@@ -24,7 +26,7 @@ class Student {
     }
     displayInfo() {
         console.log(chalk.blue(`Student ID: ${this.studentId}`));
-        console.log(chalk.blue(`Name: ${this.firstName} ${this.lastName}`));
+        console.log(chalk.blue(`Name: ${this.sName} ${this.fName}`));
         console.log(chalk.blue(`Age: ${this.age}`));
         console.log(chalk.blue(`Grade: ${this.grade}`));
         console.log(chalk.red("Enrolled Courses:"));
@@ -33,19 +35,130 @@ class Student {
         });
     }
 }
-const mathCourse = new Course("Math");
-const historyCourse = new Course("History");
-const physicsCourse = new Course("Physics");
-const computerCourse = new Course("Computer");
-const scienceCourse = new Course("Science");
-const economicsCourse = new Course("Economics");
-const student1 = new Student(1, "John", "Doe", 18, "A");
-const student2 = new Student(2, "Yahoo", "Baba", 17, "B");
-student1.enroll(mathCourse);
-student1.enroll(historyCourse);
-student1.enroll(scienceCourse);
-student2.enroll(physicsCourse);
-student2.enroll(economicsCourse);
-student2.enroll(computerCourse);
-student1.displayInfo();
-student2.displayInfo();
+class studentsData {
+    students = [];
+    foundStudent;
+    constructor(Data) {
+        this.students.push(Data);
+    }
+    find(name) {
+        this.foundStudent = undefined;
+        if (name) {
+            this.foundStudent = this.students.find((student) => student.sName.toLowerCase() ||
+                student.fName.toLowerCase() === name.toLowerCase());
+        }
+        return this.foundStudent;
+    }
+    displaydetail(name) {
+        let show = this.find(name);
+        if (show) {
+            show.displayInfo();
+        }
+        else {
+            console.log(chalk.red.italic("Student is not found"));
+        }
+    }
+}
+let question = [
+    {
+        name: "id",
+        type: "input",
+        message: "Enter the id of student",
+        validate: function (input) {
+            if (input !== "") {
+                return true;
+            }
+            return " Please enter a valid ID.";
+        },
+    },
+    {
+        name: "name",
+        type: "input",
+        message: "Enter the Student's name",
+        validate: function (input) {
+            if (input !== "") {
+                return true;
+            }
+            return " Please enter a name.";
+        },
+    },
+    {
+        name: "fName",
+        type: "input",
+        message: "Enter the Student's Father name",
+    },
+    {
+        name: "age",
+        type: "input",
+        message: "Enter the Student's age",
+    },
+    {
+        name: "grade",
+        type: "input",
+        message: "Enter the grade of student",
+        validate: function (input) {
+            if (input !== "") {
+                return true;
+            }
+            return " Please enter a grade.";
+        },
+    },
+];
+while (true) {
+    let ans = await inquirer.prompt(question);
+    let student = new Student(ans.id, ans.name, ans.fName, ans.age, ans.grade);
+    while (true) {
+        let coursesData = await inquirer.prompt([
+            {
+                name: "cour",
+                type: "input",
+                message: "Enter the course",
+                validate: function (input) {
+                    if (input !== "") {
+                        return true;
+                    }
+                    return " Please enter a course.";
+                },
+            },
+            {
+                name: "confirm",
+                type: "list",
+                message: "Do you want to add more courses?",
+                choices: ["YES", "NO"],
+            },
+        ]);
+        const course = new Course(coursesData.cour);
+        student.enroll(course);
+        if (coursesData.confirm === "NO") {
+            break;
+        }
+    }
+    student.displayInfo();
+    const studentBio = new studentsData(student);
+    let confirms = await inquirer.prompt({
+        name: "confir",
+        type: "list",
+        message: "What do you want?",
+        choices: ["Add more student's detail", "To view student's detail", "Exit"],
+    });
+    if (confirms.confir === "Add more student's detail") {
+        console.log("Add");
+    }
+    else if (confirms.confir === "To view student's detail") {
+        await viewDetail(studentBio);
+        break;
+    }
+    else if (confirms.confir === "Exit") {
+        break;
+    }
+}
+//To view the detail of required student
+async function viewDetail(data) {
+    let idOrName = await inquirer.prompt({
+        name: "idName",
+        type: "input",
+        message: "Enter the Student's name",
+    });
+    data.find(idOrName.idName);
+    data.displaydetail(idOrName.idName);
+}
