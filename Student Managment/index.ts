@@ -71,7 +71,7 @@ let question: QuestionCollection = [
       if (input !== "") {
         return true;
       }
-      return " Please enter a valid ID.";
+      return " Please enter a Student's ID.";
     },
   },
   {
@@ -94,6 +94,12 @@ let question: QuestionCollection = [
     name: "age",
     type: "input",
     message: "Enter the Student's age",
+    validate: function (input) {
+      if (input !== "") {
+        return true;
+      }
+      return " Please enter age.";
+    },
   },
   {
     name: "grade",
@@ -103,7 +109,7 @@ let question: QuestionCollection = [
       if (input !== "") {
         return true;
       }
-      return " Please enter a grade.";
+      return " Please enter grade.";
     },
   },
 ];
