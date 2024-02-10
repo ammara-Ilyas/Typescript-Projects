@@ -25,30 +25,33 @@ let question1: QuestionCollection = [
     },
   },
 ];
-while (true) {
-  try {
-    let guesingNo = await inquirer.prompt(question1);
-    if (guesingNo.gueesNo == randomNumber) {
-      console.log(chalk.red("Congrats! Your answer is correct"));
-      break;
-    } else if (guesingNo.gueesNo < randomNumber) {
-      console.log(chalk.green("Your number is too smaller..."));
-    } else if (guesingNo.gueesNo > randomNumber) {
-      console.log(chalk.green("Your number is too greater..."));
-    } else {
-      console.log(chalk.red("Your answer is wrong.Try again"));
-    }
-    ///guessNo push in array
-    guessArray.push(guesingNo.gueesNo);
-    console.log(chalk.blackBright(guessArray));
+const numberGuessing = async () => {
+  while (true) {
+    try {
+      let guesingNo = await inquirer.prompt(question1);
+      if (guesingNo.gueesNo == randomNumber) {
+        console.log(chalk.red("Congrats! Your answer is correct"));
+        break;
+      } else if (guesingNo.gueesNo < randomNumber) {
+        console.log(chalk.green("Your number is too smaller..."));
+      } else if (guesingNo.gueesNo > randomNumber) {
+        console.log(chalk.green("Your number is too greater..."));
+      } else {
+        console.log(chalk.red("Your answer is wrong.Try again"));
+      }
+      ///guessNo push in array
+      guessArray.push(guesingNo.gueesNo);
+      console.log(chalk.blackBright(guessArray));
 
-    ///10 attempts
-    guess++;
-    console.log(chalk.bold.blue(`Remaining attempts are ${10 - guess}`));
-    if (guess == 10) {
-      break;
+      ///10 attempts
+      guess++;
+      console.log(chalk.bold.blue(`Remaining attempts are ${10 - guess}`));
+      if (guess == 10) {
+        break;
+      }
+    } catch (error) {
+      console.log(error);
     }
-  } catch (error) {
-    console.log(error);
   }
-}
+};
+numberGuessing();

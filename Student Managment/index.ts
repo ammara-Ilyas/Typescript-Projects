@@ -113,59 +113,66 @@ let question: QuestionCollection = [
     },
   },
 ];
-while (true) {
-  let ans = await inquirer.prompt(question);
-  let student = new Student(ans.id, ans.name, ans.fName, ans.age, ans.grade);
+const studentManage = async () => {
   while (true) {
-    let coursesData = await inquirer.prompt([
-      {
-        name: "cour",
-        type: "input",
-        message: "Enter the course",
-        validate: function (input) {
-          if (input !== "") {
-            return true;
-          }
-          return " Please enter a course.";
+    let ans = await inquirer.prompt(question);
+    let student = new Student(ans.id, ans.name, ans.fName, ans.age, ans.grade);
+    while (true) {
+      let coursesData = await inquirer.prompt([
+        {
+          name: "cour",
+          type: "input",
+          message: "Enter the course",
+          validate: function (input) {
+            if (input !== "") {
+              return true;
+            }
+            return " Please enter a course.";
+          },
         },
-      },
-      {
-        name: "confirm",
-        type: "list",
-        message: "Do you want to add more courses?",
-        choices: ["YES", "NO"],
-      },
-    ]);
-    const course = new Course(coursesData.cour);
-    student.enroll(course);
-    if (coursesData.confirm === "NO") {
+        {
+          name: "confirm",
+          type: "list",
+          message: "Do you want to add more courses?",
+          choices: ["YES", "NO"],
+        },
+      ]);
+      const course = new Course(coursesData.cour);
+      student.enroll(course);
+      if (coursesData.confirm === "NO") {
+        break;
+      }
+    }
+    student.displayInfo();
+    const studentBio = new studentsData(student);
+    let confirms = await inquirer.prompt({
+      name: "confir",
+      type: "list",
+      message: "What do you want?",
+      choices: [
+        "Add more student's detail",
+        "To view student's detail",
+        "Exit",
+      ],
+    });
+    if (confirms.confir === "Add more student's detail") {
+      console.log("Add");
+    } else if (confirms.confir === "To view student's detail") {
+      await viewDetail(studentBio);
+      break;
+    } else if (confirms.confir === "Exit") {
       break;
     }
   }
-  student.displayInfo();
-  const studentBio = new studentsData(student);
-  let confirms = await inquirer.prompt({
-    name: "confir",
-    type: "list",
-    message: "What do you want?",
-    choices: ["Add more student's detail", "To view student's detail", "Exit"],
-  });
-  if (confirms.confir === "Add more student's detail") {
-    console.log("Add");
-  } else if (confirms.confir === "To view student's detail") {
-    await viewDetail(studentBio);
-    break;
-  } else if (confirms.confir === "Exit") {
-    break;
+  //To view the detail of required student
+  async function viewDetail(data: studentsData) {
+    let idOrName = await inquirer.prompt({
+      name: "idName",
+      type: "input",
+      message: "Enter the Student's name",
+    });
+    data.find(idOrName.idName);
+    data.displaydetail(idOrName.idName);
   }
-}
-//To view the detail of required student
-async function viewDetail(data: studentsData) {
-  let idOrName = await inquirer.prompt({
-    name: "idName",
-    type: "input",
-    message: "Enter the Student's name",
-  });
-  data.find(idOrName.idName);
-  data.displaydetail(idOrName.idName);
-}
+};
+studentManage();

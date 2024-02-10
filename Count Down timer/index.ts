@@ -1,6 +1,6 @@
 //////////////////////////////// Countdown timer/////////////
 import inquirer from "inquirer";
-class CountdownTimer {
+class CountdownTime {
   private duration: number;
   private timerId: NodeJS.Timeout | null;
   constructor(timeDuration: number) {
@@ -36,11 +36,14 @@ class CountdownTimer {
     }
   }
 }
-let starTime = await inquirer.prompt({
-  name: "time",
-  type: "input",
-  message: "You can set the countdown timer for any time you want",
-});
-let timeInNumber: number = parseInt(starTime.time, 10);
-const countdownTimer = new CountdownTimer(timeInNumber);
-countdownTimer.start();
+async function CountdownTimer() {
+  let starTime = await inquirer.prompt({
+    name: "time",
+    type: "input",
+    message: "You can set the countdown timer for any time you want",
+  });
+  let timeInNumber: number = parseInt(starTime.time, 10);
+  const countdownTimer = new CountdownTime(timeInNumber);
+  countdownTimer.start();
+}
+CountdownTimer();

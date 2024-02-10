@@ -103,37 +103,40 @@ let Question: questionType[] = [
     corectAnswer: "  Using the ? symbol after the parameter name",
   },
 ];
-let sName = await inquirer.prompt({
-  name: "name",
-  type: "input",
-  message: "What is your name",
-});
-console.log(chalk.bold.red("Typescript Proficiency Quiz"));
-let score: number = 0;
-for (let i = 0; i < Question.length; i++) {
-  let answer = await inquirer.prompt({
-    name: "ques",
-    type: "list",
-    message: Question[i].question,
-    choices: [
-      Question[i].option1,
-      Question[i].option2,
-      Question[i].option3,
-      Question[i].option4,
-    ],
+const quizApp = async () => {
+  let sName = await inquirer.prompt({
+    name: "name",
+    type: "input",
+    message: "What is your name",
   });
-  console.log(answer.ques);
-  if (answer.ques === Question[i].corectAnswer) {
-    console.log("correct");
-    score++;
-  } else {
-    console.log(
-      chalk.italic.blackBright(
-        chalk.bold.red(`Correct answer is ${Question[i].corectAnswer}`)
-      )
-    );
+  console.log(chalk.bold.red("Typescript Proficiency Quiz"));
+  let score: number = 0;
+  for (let i = 0; i < Question.length; i++) {
+    let answer = await inquirer.prompt({
+      name: "ques",
+      type: "list",
+      message: Question[i].question,
+      choices: [
+        Question[i].option1,
+        Question[i].option2,
+        Question[i].option3,
+        Question[i].option4,
+      ],
+    });
+    console.log(answer.ques);
+    if (answer.ques === Question[i].corectAnswer) {
+      console.log("correct");
+      score++;
+    } else {
+      console.log(
+        chalk.italic.blackBright(
+          chalk.bold.red(`Correct answer is ${Question[i].corectAnswer}`)
+        )
+      );
+    }
   }
-}
-console.log(
-  chalk.italic.blueBright(`Dear ${sName.name}! Your Score: ${score}`)
-);
+  console.log(
+    chalk.italic.blueBright(`Dear ${sName.name}! Your Score: ${score}`)
+  );
+};
+quizApp();

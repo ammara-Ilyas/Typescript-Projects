@@ -18,11 +18,14 @@ class wordCounter {
     );
   }
 }
-let wordCharCount = await inquirer.prompt({
-  name: "sentence",
-  type: "input",
-  message: "Enter the Sentences",
-});
-//
-let wordCounters = new wordCounter(wordCharCount.sentence);
-wordCounters.wordCount();
+async function wordCounting() {
+  let wordCharCount = await inquirer.prompt({
+    name: "sentence",
+    type: "input",
+    message: "Enter the Sentences",
+  });
+  //
+  let wordCounters = new wordCounter(wordCharCount.sentence);
+  wordCounters.wordCount();
+}
+wordCounting();
