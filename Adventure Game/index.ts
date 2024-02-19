@@ -2,94 +2,94 @@ import inquirer from "inquirer";
 
 class Player {
   name: string;
-  currentRoom: Room;
-
-  constructor(name: string, currentRoom: Room) {
-    this.name = name;
-    this.currentRoom = currentRoom;
-  }
-
-  move(direction: string) {
-    const nextRoom = this.currentRoom.getExit(direction);
-
-    if (nextRoom) {
-      this.currentRoom = nextRoom;
-      console.log(`You moved to ${this.currentRoom.name}`);
-    } else {
-      console.log("You can't go that way!");
-    }
-  }
-
-  lookAround() {
-    console.log(`You are in ${this.currentRoom.name}`);
-    console.log(`Exits: ${this.currentRoom.getExits().join(", ")}`);
-  }
-}
-
-// Define a class for the Room
-class Room {
-  name: string;
-  exits: Record<string, Room>;
-
+  fuel: number;
   constructor(name: string) {
     this.name = name;
-    this.exits = {};
+    this.fuel = 100;
   }
-
-  addExit(direction: string, room: Room) {
-    this.exits[direction] = room;
+  fuelDecrease() {
+    let fuel = this.fuel - 5;
+    this.fuel = fuel;
   }
-
-  getExit(direction: string): Room | undefined {
-    return this.exits[direction];
+  drinkFuel() {
+    this.fuel = 100;
   }
-
-  getExits(): string[] {
-    return Object.keys(this.exits);
+}
+class Opponent {
+  name: string;
+  fuel: number;
+  constructor(name: string) {
+    this.name = name;
+    this.fuel = 0;
+  }
+  fuelDecrease() {
+    let fuel = this.fuel - 5;
+    this.fuel = fuel;
   }
 }
 
-// Example: Creating rooms and connecting them
-const room1 = new Room("Room 1");
-const room2 = new Room("Room 2");
-const room3 = new Room("Room 3");
+async function gameLoop() {
+  const name = await inquirer.prompt({
+    type: "input",
+    name: "player",
+    message: "Enter your Player's name:",
+  });
+  const player = new Player(name.player);
 
-room1.addExit("north", room2);
-room2.addExit("south", room1);
-room2.addExit("east", room3);
-room3.addExit("west", room2);
+  const oppoName = await inquirer.prompt({
+    type: "list",
+    name: "select",
+    message: "Select Your Opponent:",
+    choices: ["Skeleton", "Assassin", "Zombi"],
+  });
+  const opponent = new Opponent(oppoName.select);
+  while (true) {
+    if (oppoName.select === "Skeleton") {
+      console.log(`${name.player} & ${oppoName.select}`);
+      await work();
+    } else if (oppoName.select === "Assassin") {
+      console.log(`${name.player} & ${oppoName.select}`);
+      await work();
+    } else if (oppoName.select === "Zombi") {
+      console.log(`${name.player} & ${oppoName.select}`);
+      await work();
+    }
 
-// Example: Creating a player and placing them in a starting room
-const player = new Player("Player1", room1);
-
-// Example: Taking input from the player
-// Note: This is a simplified example; in a real game, you would use a more sophisticated input mechanism.
-
-function gameLoop() {
-  inquirer
-    .prompt([
-      {
-        type: "input",
-        name: "command",
-        message: "Enter your command:",
-      },
-    ])
-    .then((answers) => {
-      processCommand(answers.command.trim().toLowerCase());
-      gameLoop(); // Continue the game loop
-    });
-}
-
-function processCommand(command: string) {
-  if (command.startsWith("move")) {
-    const direction = command.split(" ")[1];
-    player.move(direction);
-  } else if (command === "look") {
-    player.lookAround();
-  } else {
-    console.log("Invalid command. Try 'move <direction>' or 'look'.");
+    async function work() {
+      let work = await inquirer.prompt({
+        type: "list",
+        name: "select",
+        message: "Select Your Opponent:",
+        choices: ["Attack", "Drink ocean", "Run for Your life"],
+      });
+      if (work.select === "Attack") {
+        let num = Math.floor(Math.random() * 2);
+        if (num > 0) {
+          player.fuelDecrease();
+          console.log(`${player.name} and fuel:${player.fuel}`);
+          console.log(`${opponent.name} and fuel:${opponent.fuel}`);
+          if (player.fuel <= 0) {
+            console.log("You loose, better next time");
+            process.exit();
+          }
+        } else if (num <= 0) {
+          opponent.fuelDecrease();
+          console.log(`${player.name} and fuel:${player.fuel}`);
+          console.log(`${opponent.name} and fuel:${opponent.fuel}`);
+          if (opponent.fuel <= 0) {
+            console.log("You are winnner");
+            process.exit();
+          }
+        }
+      } else if (work.select === "Drink ocean") {
+        player.drinkFuel();
+        console.log(`You drink ocean. Your fuel : ${player.fuel}`);
+      } else if (work.select === "Run for Your life") {
+        console.log("You loose, better next time");
+        process.exit();
+      }
+    }
   }
 }
-
 // Start the game loop
 gameLoop();
